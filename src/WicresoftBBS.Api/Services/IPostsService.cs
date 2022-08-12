@@ -9,6 +9,7 @@ namespace WicresoftBBS.Api.Services
         Task<PostDTO> GetPostById(int id);
         Task UpdatePost(PostDTO postDto);
         Task<PostDTO> CreatePost(PostDTO postDto);
+        Task<int> AddPosts(IList<Post> posts);
         Task DeletePost(int id);
         bool PostExists(int id);
     }

@@ -11,6 +11,13 @@ namespace WicresoftBBS.Api.Services
         {
             _context = context;
         }
+
+        public Task<int> AddPostTypes(IList<PostType> postTypes)
+        {
+            _context.PostTypes.AddRange(postTypes);
+            return _context.SaveChangesAsync();
+        }
+
         public async Task<PostType> CreatePostType(PostType postType)
         {
             _context.PostTypes.Add(postType);

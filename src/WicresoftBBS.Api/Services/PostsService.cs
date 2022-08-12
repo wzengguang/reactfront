@@ -157,5 +157,11 @@ namespace WicresoftBBS.Api.Services
                 Replies = post.Replies,
                 CreateTime = post.CreateTime
             };
+
+        public Task<int> AddPosts(IList<Post> posts)
+        {
+            _context.Posts.AddRange(posts);
+            return _context.SaveChangesAsync();
+        }
     }
 }

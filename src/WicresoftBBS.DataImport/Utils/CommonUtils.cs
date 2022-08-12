@@ -10,7 +10,7 @@ namespace WicresoftBBS.DataImport.Utils
         private const string API_CONFIGURATION_JSON_NAME = "appsettings.json";
         private const string DBNAME = "WicresoftBBSDatabaseTest";
 
-        private static readonly string _binFolder = Path.GetDirectoryName(typeof(Program).Assembly.Location); 
+        private static readonly string _binFolder = Path.GetDirectoryName(typeof(Program).Assembly.Location);
         public static IConfigurationRoot GetApiConfiguration()
         {
             var builder = new ConfigurationBuilder();
@@ -32,9 +32,24 @@ namespace WicresoftBBS.DataImport.Utils
                 .Options);
         }
 
-        public static IUsersService GetRepo()
+        public static IUsersService GetUsersService()
         {
             return new UsersService(GetContext());
+        }
+
+        public static IPostsService GetPostsService()
+        {
+            return new PostsService(GetContext());
+        }
+
+        public static IPostTypesService GetPostTypesService()
+        {
+            return new PostTypesService(GetContext());
+        }
+
+        public static string GetDataFolderPath()
+        {
+            return Path.Combine(_binFolder, "DataFolder");
         }
     }
 }
