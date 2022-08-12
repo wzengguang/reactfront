@@ -8,7 +8,7 @@ namespace WicresoftBBS.DataImport.Utils
     public static class CommonUtils
     {
         private const string API_CONFIGURATION_JSON_NAME = "appsettings.json";
-        private const string DBNAME = "WicresoftBBSDatabase";
+        private const string DBNAME = "WicresoftBBSDatabaseTest";
 
         private static readonly string _binFolder = Path.GetDirectoryName(typeof(Program).Assembly.Location); 
         public static IConfigurationRoot GetApiConfiguration()
