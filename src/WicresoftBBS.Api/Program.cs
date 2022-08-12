@@ -24,6 +24,8 @@ namespace WicresoftBBS.Api
             builder.Services.AddScoped<IUsersService, UsersService>();
             var app = builder.Build();
 
+            app.Urls.Add("https://*:8080");
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
