@@ -26,26 +26,21 @@ namespace WicresoftBBS.Api
             builder.Services.AddScoped<IPostTypesService, PostTypesService>();
             builder.Services.AddScoped<IRepliesService, RepliesService>();
 
-#if DEBUG
+
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("Debug", policy =>
+                options.AddPolicy("Temporary", policy =>
                 {
                     policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
                 });
             });
-#endif
-
 
             var app = builder.Build();
 
-            app.Urls.Add("https://*:8080");
+            //app.Urls.Add("https://*:8080");
 
-#if DEBUG
-            app.UseCors("Debug");
-#else
-            app.UseCors();
-#endif
+            app.UseCors("Temporary");
+
 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
