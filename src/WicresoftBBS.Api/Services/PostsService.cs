@@ -52,6 +52,9 @@ namespace WicresoftBBS.Api.Services
                 return null;
             }
 
+            post.ClickCount++;
+            await _context.SaveChangesAsync();
+
             return ItemToDTO(post);
         }
 
@@ -61,7 +64,7 @@ namespace WicresoftBBS.Api.Services
             if(time != null)
             {
                 DateTime now = DateTime.UtcNow;
-                if (timeType == "ago")
+                if (timeType.ToLower().Trim().Equals("ago"))
                 {
                     DateTime startTime = now.AddSeconds(-(double)time);
                     result = await _context.Posts.Where(x => x.CreateTime >= startTime && x.CreateTime <= now
@@ -88,15 +91,15 @@ namespace WicresoftBBS.Api.Services
                         .ToListAsync();
             }
 
-            switch (sortBy)
+            switch (sortBy.ToLower().Trim())
             {
-                case "CreateTime":
+                case "createtime":
                     result = result.OrderByDescending(x => x.CreateTime).ToList();
                     break;
-                case "RepliesCount":
+                case "repliescount":
                     result = result.OrderByDescending(x => x.RepliesCount).ToList();
                     break;
-                case "ClickCount":
+                case "clickcount":
                     result = result.OrderByDescending(x => x.ClickCount).ToList();
                     break;
                 default:
@@ -104,7 +107,7 @@ namespace WicresoftBBS.Api.Services
                     break;
             }
 
-            if (sortType != "desc")
+            if (!sortType.ToLower().Trim().Equals("desc"))
             {
                 result.Reverse();
             }
@@ -116,7 +119,6 @@ namespace WicresoftBBS.Api.Services
         {
             var post = await _context.Posts.FindAsync(postDto.Id);
 
-            post.ClickCount = postDto.ClickCount;
             post.Content = postDto.Content;
             post.PostType = postDto.PostType;
             post.PostTypeId = postDto.PostTypeId;
