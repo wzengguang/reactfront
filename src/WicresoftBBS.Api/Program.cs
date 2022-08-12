@@ -29,12 +29,13 @@ namespace WicresoftBBS.Api
 
             app.Urls.Add("https://*:8080");
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            app.UseCors();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "WicresoftBBS.Api V1");
+            });
 
             app.UseHttpsRedirection();
 
