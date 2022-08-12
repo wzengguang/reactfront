@@ -17,12 +17,12 @@ namespace WicresoftBBS.Api.Controllers
         }
 
         // GET: api/Replies
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<ReplyDTO>>> GetReplies()
+        [HttpGet("GetRepliesByPostId")]
+        public async Task<ActionResult<RepliesSummary>> GetRepliesByPostId(int postId, int pageIndex=0,int pageSize=10)
         {
-            var replies = await _service.GetReplies();
+            var replies = await _service.GetRepliesByPostId(postId, pageIndex, pageSize);
 
-            return replies.ToList();
+            return replies;
         }
 
         // GET: api/Replies/5

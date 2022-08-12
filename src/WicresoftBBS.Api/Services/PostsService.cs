@@ -55,16 +55,16 @@ namespace WicresoftBBS.Api.Services
             return ItemToDTO(post);
         }
 
-        public async Task<IEnumerable<PostDTO>> GetPosts(string searchTerm, int pageIndex, int pageSize, ulong? time, string timeType = "ago", string sortBy = "ReplyTime", string sortType = "desc")
+        public async Task<PostsSummary> GetPosts(string searchTerm, int pageIndex, int pageSize, ulong? time, string timeType = "ago", string sortBy = "ReplyTime", string sortType = "desc")
         {
-            List<PostDTO> result;
+            List<PostDTO> list;
             if (time != null)
             {
                 DateTime now = DateTime.UtcNow;
                 if (timeType.ToLower().Trim().Equals("ago"))
                 {
                     DateTime startTime = now.AddSeconds(-(double)time);
-                    result = await _context.Posts.Where(x => x.CreateTime >= startTime && x.CreateTime <= now
+                    list = await _context.Posts.Where(x => x.CreateTime >= startTime && x.CreateTime <= now
                             && (string.IsNullOrEmpty(searchTerm) ? true : (x.Title.Contains(searchTerm) || x.Content.Contains(searchTerm))))
                         .Select(x => ItemToDTO(x))
                         .ToListAsync();
@@ -72,7 +72,7 @@ namespace WicresoftBBS.Api.Services
                 else
                 {
                     DateTime endTime = now.AddSeconds((double)time);
-                    result = await _context.Posts.Where(x => x.CreateTime >= now && x.CreateTime <= endTime
+                    list = await _context.Posts.Where(x => x.CreateTime >= now && x.CreateTime <= endTime
                             && (string.IsNullOrEmpty(searchTerm) ? true : (x.Title.Contains(searchTerm) || x.Content.Contains(searchTerm))))
                         .Select(x => ItemToDTO(x))
                         .ToListAsync();
@@ -80,42 +80,60 @@ namespace WicresoftBBS.Api.Services
             }
             else
             {
-                result = await _context.Posts.Where(x => string.IsNullOrEmpty(searchTerm) ? true : (x.Title.Contains(searchTerm) || x.Content.Contains(searchTerm)))
+                list = await _context.Posts.Where(x => string.IsNullOrEmpty(searchTerm) ? true : (x.Title.Contains(searchTerm) || x.Content.Contains(searchTerm)))
                         .Select(x => ItemToDTO(x))
                         .ToListAsync();
             }
 
+
             switch (sortBy.ToLower().Trim())
             {
                 case "createtime":
-                    result = result.OrderByDescending(x => x.CreateTime).ToList();
+                    list = list.OrderByDescending(x => x.CreateTime).ToList();
                     break;
                 case "repliescount":
-                    result = result.OrderByDescending(x => x.RepliesCount).ToList();
+                    list = list.OrderByDescending(x => x.RepliesCount).ToList();
                     break;
                 case "clickcount":
-                    result = result.OrderByDescending(x => x.ClickCount).ToList();
+                    list = list.OrderByDescending(x => x.ClickCount).ToList();
                     break;
                 default:
-                    result = result.OrderByDescending(x => x.LastReplyTime).ToList();
+                    list = list.OrderByDescending(x => x.LastReplyTime).ToList();
                     break;
             }
 
             if (!sortType.ToLower().Trim().Equals("desc"))
             {
-                result.Reverse();
+                list.Reverse();
             }
 
-            return result.Skip(pageIndex * pageSize).Take(pageSize).ToList();
+            var postsSummary = new PostsSummary
+            {
+                TotalCount = list.Count,
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Posts = list.Skip(pageIndex * pageSize).Take(pageSize).ToList()
+            };
+
+            return postsSummary;
         }
 
-        public async Task<IEnumerable<PostDTO>> GetPostsByUserId(int userId, int pageIndex, int pageSize)
+        public async Task<PostsSummary> GetPostsByUserId(int userId, int pageIndex, int pageSize)
         {
-            return await _context.Posts.Where(x => x.CreatorId == userId)
+            var list = await _context.Posts.Where(x => x.CreatorId == userId)
                 .OrderByDescending(x => x.CreateTime)
-                .Skip(pageIndex * pageSize).Take(pageSize)
                 .Select(x => ItemToDTO(x))
                 .ToListAsync();
+
+            var postsSummmary = new PostsSummary
+            {
+                TotalCount = list.Count,
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Posts = list.Skip(pageIndex * pageSize).Take(pageSize).ToList()
+            };
+
+            return postsSummmary;
         }
 
         public async Task UpdatePost(PostDTO postDto)

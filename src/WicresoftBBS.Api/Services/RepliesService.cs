@@ -40,9 +40,18 @@ namespace WicresoftBBS.Api.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<ReplyDTO>> GetReplies()
+        public async Task<RepliesSummary> GetRepliesByPostId(int id, int pageIndex, int pageSize)
         {
-            return await _context.Replies.Select(x => ItemToDTO(x)).ToListAsync();
+            var list = await _context.Replies.Where(x => x.PostId == id).OrderByDescending(x => x.CreateTime).Select(x => ItemToDTO(x)).ToListAsync();
+            var repliesSummary = new RepliesSummary
+            {
+                TotalCount = list.Count,
+                PageIndex = pageIndex,
+                PageSize = pageSize,
+                Replies = list.Skip(pageIndex * pageSize).Take(pageSize).ToList()
+            };
+
+            return repliesSummary;
         }
 
         public async Task<ReplyDTO> GetReplyById(int id)
