@@ -19,7 +19,7 @@ namespace WicresoftBBS.Api
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<BBSDbContext>(
-                options => options.UseSqlServer(builder.Configuration.GetConnectionString("WicresoftBBSDatabase")));
+                options => options.UseSqlServer(builder.Configuration.GetConnectionString("WicresoftBBSDatabaseTest")));
 
             builder.Services.AddScoped<IUsersService, UsersService>();
             var app = builder.Build();
