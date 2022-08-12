@@ -20,9 +20,9 @@
 
         public IList<Reply> Replies { get; set; }
 
-        public DateTime LastReplyTime { get { return Replies.Max(x => x.CreateTime); } }
+        public DateTime? LastReplyTime { get { return RepliesCount > 0 ? Replies.Max(x => x.CreateTime) : null; } }
 
-        public int RepliesCount { get { return Replies.Count; } }
+        public int RepliesCount { get { return Replies == null ? 0 : Replies.Count; } }
 
         public DateTime CreateTime { get; set; }
     }

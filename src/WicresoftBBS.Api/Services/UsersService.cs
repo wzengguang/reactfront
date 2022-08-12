@@ -17,37 +17,9 @@ namespace WicresoftBBS.Api.Services
             return _context.SaveChangesAsync();
         }
 
-        public async Task<User> CreateUser(User user)
-        {
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-
-            return user;
-        }
-
-        public async Task DeleteUser(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task<IEnumerable<User>> GetAllUsers()
-        {
-            return await _context.Users.ToListAsync();
-        }
-
         public User GetUser(int id)
         {
-            return _context.Users.Where(user=>user.Id == id).First();
-        }
-
-        public async Task<User> GetUserById(int id)
-        {
-            var user = await _context.Users.FindAsync(id);
-
-            return user;
+            return _context.Users.Where(user => user.Id == id).First();
         }
 
         public List<User> GetUsers()
@@ -65,11 +37,54 @@ namespace WicresoftBBS.Api.Services
             return _context.SaveChangesAsync();
         }
 
-        public async Task UpdateUser(User user)
+        public async Task<UserDTO> CreateUser(UserDTO userDto)
         {
+            var user = new User
+            {
+                UserName = userDto.UserName,
+                Password = userDto.Password,
+                UserType = userDto.UserType,
+                CreateTime = DateTime.UtcNow,
+                Email = userDto.Email,
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return ItemToDTO(user);
+        }
+
+        public async Task DeleteUser(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<UserDTO>> GetAllUsers()
+        {
+            return await _context.Users.Select(x => ItemToDTO(x)).ToListAsync();
+        }
+
+        public async Task<UserDTO> GetUserById(int id)
+        {
+            var user = await _context.Users.FindAsync(id);
+            var userDto = ItemToDTO(user);
+            userDto.PostsCount = await _context.Posts.CountAsync(x => x.CreatorId == id);
+            userDto.RepliesCount = await _context.Replies.CountAsync(x => x.CreatorId == id);
+            return userDto;
+        }
+
+        public async Task UpdateUser(UserDTO userDto)
+        {
+            var user = await _context.Users.FindAsync(userDto.Id);
+
+            user.UserName = userDto.UserName;
+            user.Email = userDto.Email;
+
             try
             {
-                _context.Entry(user).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
             }
             catch (Exception)
@@ -82,5 +97,16 @@ namespace WicresoftBBS.Api.Services
         {
             return _context.Users.Any(e => e.Id == id);
         }
+
+        private static UserDTO ItemToDTO(User user) =>
+            new UserDTO
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                UserType = user.UserType,
+                Email = user.Email,
+                CreateTime = user.CreateTime
+            };
+
     }
 }

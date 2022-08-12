@@ -18,9 +18,16 @@ namespace WicresoftBBS.Api.Controllers
 
         // GET: api/Posts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PostDTO>>> GetPosts(string searchTerm, int pageIndex, int pageSize, ulong? time, string timeType, string sortBy = "ReplyTime", string sortType = "desc")
+        public async Task<ActionResult<IEnumerable<PostDTO>>> GetPosts(string searchTerm, int pageIndex, int pageSize, ulong? time, string timeType = "ago", string sortBy = "ReplyTime", string sortType = "desc")
         {
             var posts = await _service.GetPosts(searchTerm, pageIndex, pageSize, time, timeType, sortBy, sortType);
+            return posts.ToList();
+        }
+
+        [HttpGet("GetPostsByUserId")]
+        public async Task<ActionResult<IEnumerable<PostDTO>>> GetPostsByUserId(int userId, int pageIndex = 0, int pageSize = 10)
+        {
+            var posts = await _service.GetPostsByUserId(userId, pageIndex, pageSize);
             return posts.ToList();
         }
 

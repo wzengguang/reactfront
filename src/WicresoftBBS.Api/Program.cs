@@ -22,6 +22,9 @@ namespace WicresoftBBS.Api
                 options => options.UseSqlServer(builder.Configuration.GetConnectionString("WicresoftBBSDatabaseTest")));
 
             builder.Services.AddScoped<IUsersService, UsersService>();
+            builder.Services.AddScoped<IPostsService, PostsService>();
+            builder.Services.AddScoped<IPostTypesService, PostTypesService>();
+            builder.Services.AddScoped<IRepliesService, RepliesService>();
             var app = builder.Build();
 
             app.Urls.Add("https://*:8080");

@@ -18,12 +18,9 @@ namespace WicresoftBBS.Api.Services
             {
                 ClickCount = 0,
                 Content = postDto.Content,
-                PostType = postDto.PostType,
                 PostTypeId = postDto.PostTypeId,
-                Replies = null,
                 Title = postDto.Title,
                 CreateTime = DateTime.UtcNow,
-                Creator = postDto.User,
                 CreatorId = postDto.UserId,
                 IsDeleted = false
             };
@@ -47,7 +44,7 @@ namespace WicresoftBBS.Api.Services
         {
             var post = await _context.Posts.FindAsync(id);
 
-            if(post == null)
+            if (post == null)
             {
                 return null;
             }
@@ -58,10 +55,10 @@ namespace WicresoftBBS.Api.Services
             return ItemToDTO(post);
         }
 
-        public async Task<IEnumerable<PostDTO>> GetPosts(string searchTerm, int pageIndex, int pageSize, ulong? time, string timeType, string sortBy = "ReplyTime", string sortType = "desc")
+        public async Task<IEnumerable<PostDTO>> GetPosts(string searchTerm, int pageIndex, int pageSize, ulong? time, string timeType = "ago", string sortBy = "ReplyTime", string sortType = "desc")
         {
             List<PostDTO> result;
-            if(time != null)
+            if (time != null)
             {
                 DateTime now = DateTime.UtcNow;
                 if (timeType.ToLower().Trim().Equals("ago"))
@@ -69,16 +66,14 @@ namespace WicresoftBBS.Api.Services
                     DateTime startTime = now.AddSeconds(-(double)time);
                     result = await _context.Posts.Where(x => x.CreateTime >= startTime && x.CreateTime <= now
                             && (string.IsNullOrEmpty(searchTerm) ? true : (x.Title.Contains(searchTerm) || x.Content.Contains(searchTerm))))
-                        .Skip(pageIndex * pageSize).Take(pageSize)
                         .Select(x => ItemToDTO(x))
                         .ToListAsync();
                 }
                 else
                 {
-                    DateTime endTime=now.AddSeconds((double)time);
+                    DateTime endTime = now.AddSeconds((double)time);
                     result = await _context.Posts.Where(x => x.CreateTime >= now && x.CreateTime <= endTime
                             && (string.IsNullOrEmpty(searchTerm) ? true : (x.Title.Contains(searchTerm) || x.Content.Contains(searchTerm))))
-                        .Skip(pageIndex * pageSize).Take(pageSize)
                         .Select(x => ItemToDTO(x))
                         .ToListAsync();
                 }
@@ -86,7 +81,6 @@ namespace WicresoftBBS.Api.Services
             else
             {
                 result = await _context.Posts.Where(x => string.IsNullOrEmpty(searchTerm) ? true : (x.Title.Contains(searchTerm) || x.Content.Contains(searchTerm)))
-                        .Skip(pageIndex * pageSize).Take(pageSize)
                         .Select(x => ItemToDTO(x))
                         .ToListAsync();
             }
@@ -112,7 +106,16 @@ namespace WicresoftBBS.Api.Services
                 result.Reverse();
             }
 
-            return result;
+            return result.Skip(pageIndex * pageSize).Take(pageSize).ToList();
+        }
+
+        public async Task<IEnumerable<PostDTO>> GetPostsByUserId(int userId, int pageIndex, int pageSize)
+        {
+            return await _context.Posts.Where(x => x.CreatorId == userId)
+                .OrderByDescending(x => x.CreateTime)
+                .Skip(pageIndex * pageSize).Take(pageSize)
+                .Select(x => ItemToDTO(x))
+                .ToListAsync();
         }
 
         public async Task UpdatePost(PostDTO postDto)
