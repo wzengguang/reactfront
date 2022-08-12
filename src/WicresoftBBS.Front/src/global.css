@@ -1,0 +1,35 @@
+.flex {
+    display: flex;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.container {
+    width: 1000px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(68, 68, 68);
+}
+
+.post-title {
+    border-bottom: 1px solid rgb(68, 68, 68);
+    font-size: 16.5px;
+    line-height: 46px;
+    padding: 0 10px 0 10px;
+    margin: 0;
+}
+
+.post-left {
+    border-right: 1px solid rgb(68, 68, 68);
+
+    width: 182px;
+}
+
+.post-content-time {
+    border-bottom: 1px dashed rgb(68, 68, 68);
+    margin: 0 10px 0 10px;
+}
+
+.post-right {}
