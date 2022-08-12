@@ -18,11 +18,11 @@ namespace WicresoftBBS.Api.Services
             {
                 Content = replyDto.Content,
                 Post = replyDto.Post,
-                PostId = replyDto.Id,
-                CreateTime = replyDto.CreateTime,
+                PostId = replyDto.PostId,
+                CreateTime = DateTime.UtcNow,
                 Creator = replyDto.Creator,
                 CreatorId = replyDto.CreatorId,
-                FloorId = replyDto.FloorId
+                FloorId = replyDto.Post.Replies.Count > 0 ? replyDto.Post.Replies.Max(x => x.FloorId) + 1 : 1
             };
 
             _context.Replies.Add(reply);

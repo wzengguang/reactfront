@@ -16,13 +16,13 @@ namespace WicresoftBBS.Api.Services
         {
             var post = new Post()
             {
-                ClickCount = postDto.ClickCount,
+                ClickCount = 0,
                 Content = postDto.Content,
                 PostType = postDto.PostType,
                 PostTypeId = postDto.PostTypeId,
-                Replies = postDto.Replies,
+                Replies = null,
                 Title = postDto.Title,
-                CreateTime = postDto.CreateTime,
+                CreateTime = DateTime.UtcNow,
                 Creator = postDto.User,
                 CreatorId = postDto.UserId,
                 IsDeleted = false
