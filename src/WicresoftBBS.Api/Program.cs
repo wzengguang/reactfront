@@ -19,17 +19,34 @@ namespace WicresoftBBS.Api
             builder.Services.AddSwaggerGen();
 
             builder.Services.AddDbContext<BBSDbContext>(
-                options => options.UseSqlServer(builder.Configuration.GetConnectionString("WicresoftBBSDatabase")));
+                options => options.UseSqlServer(builder.Configuration.GetConnectionString("WicresoftBBSDatabaseTest")));
 
-            builder.Services.AddScoped<IBBSRepo, BBSRepo>();
+            builder.Services.AddScoped<IUsersService, UsersService>();
+            builder.Services.AddScoped<IPostsService, PostsService>();
+            builder.Services.AddScoped<IPostTypesService, PostTypesService>();
+            builder.Services.AddScoped<IRepliesService, RepliesService>();
+
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("Temporary", policy =>
+                {
+                    policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+                });
+            });
+
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            //app.Urls.Add("https://*:8080");
+
+            app.UseCors("Temporary");
+
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "WicresoftBBS.Api V1");
+            });
 
             app.UseHttpsRedirection();
 

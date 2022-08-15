@@ -12,7 +12,7 @@ namespace WicresoftBBS.DataImport.BasicImport
 
         public static void UserImport()
         {
-            var repo = CommonUtils.GetRepo();
+            var repo = CommonUtils.GetUsersService();
             var userNames = new[]
             {
                 "Admin",

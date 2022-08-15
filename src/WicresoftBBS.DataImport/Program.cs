@@ -7,7 +7,7 @@ namespace WicresoftBBS.DataImport
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
-            BasicDataImporter.UserImport();
+            Suzhou12345Impoerter.DataImport();
         }
     }
 }
